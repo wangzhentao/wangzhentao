@@ -1,0 +1,123 @@
+<?php
+use yii\widgets\LinkPager;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>留言板</title>
+	<style>
+		hr{color: black;}
+		table{width: 80%;}
+		.tr{line-height: 25px;}
+	</style>
+</head>
+<body>
+	<center id="box">
+		<form action="?r=message/commit" method="post">
+		<table>
+			<tr>
+				<td>用户：</td>
+				<td><input type="text" name="name"></td>
+			</tr>
+			<tr>
+				<td>内容</td>
+				<td><textarea name="content"  cols="40" rows="5"></textarea></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><input type="button" value="留言"></td>
+			</tr>
+		</table>
+		</form>
+		
+	</center>
+		<?php foreach ($info as $key => $value): ?>
+		<hr />
+		<table id="t<?=$value['id']?>">
+			<tr class="tr">
+				<td><?=$value['name']?></td>
+				<td><?=$value['addtime']?></td>
+				<td><a href="javascript:del(<?=$value['id']?>)">删除</a>
+				</td>
+			</tr>
+			<tr class="tr">
+				<td colspan="3" class="change" onclick="update(<?=$value['id']?>)"><?=$value['content']?></td>
+			</tr>
+		</table>
+		<?php endforeach ?>
+	<!-- <a href="?r=message/information/1/5">1</a>
+	<a href="?r=message/information/2/5">2</a>
+	<a href="?r=message/information/3/5">3</a>
+	<a href="?r=message/information/4/5">4</a> -->
+
+
+<?php
+    echo LinkPager::widget([
+        'pagination'=>$pages,
+    ]);
+?>
+
+</body>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script>
+	$(function(){
+		//添加
+		$("input[type='button']").click(function(){
+			var name=$("input[name='name']").val();
+			var content=$("textarea[name='content']").val();
+
+			$.ajax({
+				url :'?r=message/add',
+				data:{name:name,content:content},
+				Type:'get',
+				success:function(data){
+					if(data){
+						$("#box").after(data);
+					}
+					console.log(data);
+				}
+			});
+		})
+
+		
+	})
+	//删除
+	function del(id){
+		var tid   = 't'+id;
+		var _this = $("#"+tid);
+		$.ajax({
+			url :'?r=message/delete',
+			data:{id:id},
+			Type:'get',
+			success:function(data){
+				if(data){
+					_this.remove();
+				}
+				console.log(data);
+			}
+		});
+	}
+
+	//修改
+	function update(id){
+		var _this   = $(".change");
+		alert(id);
+		//_this.html('<input type="text" name="content" value="'+content+'" />');
+		// $.ajax({
+		// 	url :'?r=message/delete',
+		// 	data:{id:id},
+		// 	Type:'get',
+		// 	success:function(data){
+		// 		if(data){
+		// 			_this.remove();
+		// 		}
+		// 		console.log(data);
+		// 	}
+		// });
+	}
+</script>
+</html>
